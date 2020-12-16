@@ -51,13 +51,13 @@ static struct argp_option options[] = {
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;    /** Condition variable */
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; /** Self explanatory */
 int count = 0;
-int count_to = 0;
+int *count_too = 0;
 
 typedef struct {
   int args[1];
   int verbose;
   int tick;
-} arguments_t:
+} arguments_t;
 
 void errno_abort(char *message) {
   perror(message);
@@ -143,7 +143,7 @@ void create_timer(int tick) {
 }
 
 void statemachine_callback(void) {
-  my_states_data **cur_data = states_get_data();
+  my_states_data *cur_data = states_get_data();
 
   int diff = cur_data->cur_val - cur_data->prev_val;
 
@@ -192,7 +192,7 @@ int main(int argc, char **argv) {
   create_timer(arguments.tick);
 
   error = pthread_mutex_lock(&mutex);
-  if (error = 0)
+  if (!error)
     err_abort(error, "Lock mutex");
 
   while (count < count_to) {
@@ -209,10 +209,10 @@ int main(int argc, char **argv) {
 
   printf("Finshed\n");
 
-  return;
+  return -1;
 }
 
-void err_abort(int status, char *message) {
+int err_abort(int status, char *message) {
   fprintf(stderr, "%s\n", message);
   exit(status);
   return 0;
